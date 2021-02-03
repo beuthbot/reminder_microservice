@@ -66,14 +66,17 @@ app.endpoint('remind', async (req, answ)=>{
 
     const result = parseIntent(req.intent, req.entities, req.user);
     if(!result.success){
-        return answ.setError(result.errorMessage);
+        return answ.setError(result.errorMessage).setCacheable(false);
+    }
+
+    if(!result.reminder){
+        return answ.setError('Could not create reminder for unknown reasons').setCacheable(false);
     }
 
     await result.reminder.save();
+    console.log('saved reminder', result.reminder)
 
-    console.log('reninder for save: ', result.reminder)
-
-    return answ.setContent(result.reminder.toHumanReadable());
+    return answ.setContent(result.reminder.toHumanReadable()).setCacheable(false);
 })
 
 /* Start server */
