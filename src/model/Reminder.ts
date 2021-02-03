@@ -1,5 +1,6 @@
 import {BaseEntity, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
 import {applyInterval} from "./Time";
+import * as moment from "moment";
 
 @Entity()
 export class Reminder extends BaseEntity {
@@ -73,5 +74,10 @@ export class Reminder extends BaseEntity {
                 return item;
             }
         });
+    }
+
+    toHumanReadable() {
+        moment.locale('de')
+        return "Erinnere " + moment.unix(this.remindAtUnix).calendar() + " an " + this.title;
     }
 }

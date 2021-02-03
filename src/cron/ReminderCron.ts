@@ -2,6 +2,7 @@ import * as cron from 'node-cron';
 import {ReminderService} from "../service/ReminderService";
 import {Reminder} from "../model/Reminder";
 import {currentTimestamp, stringFormatUnixTimestamp} from "../model/Time";
+import axios from 'axios';
 
 export default function schedule(){
 
@@ -13,7 +14,7 @@ export default function schedule(){
         console.log('due', entries.length, entries.map(ent=>ent.id));
         console.log('recurring', entries.filter(ent=>ent.isRecurring).length);
 
-        entries.forEach(reminder => {
+        for (const reminder of entries) {
             reminder.remindedAtUnix = currentTimestamp();
 
             if(reminder.isRecurring){
@@ -26,10 +27,29 @@ export default function schedule(){
                 });
             }
 
-            //todo remind entries
+            //todo get user clients from database service when released
+            const userClients = [
+                {serviceName: 'discord', clientId: '185540011314249729'}
+            ];
+
+            for (const {serviceName, clientId} of userClients) {
+                try{
+                    const data = {
+                        token: process.env.USERMESSENGER_TOKEN,
+                        service: serviceName,
+                        user: clientId,
+                        message: 'Erinnerung: ' + reminder.title
+                    };
+                    console.log('posting to usermessenger', data)
+                    const response = axios.post(process.env.USERMESSENGER_ENDPOINT, data);
+                }
+                catch (e) {
+                    console.log(e);
+                }
+            }
 
             reminder.save();
-        })
+        }
 
 
     });
