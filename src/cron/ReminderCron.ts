@@ -44,7 +44,7 @@ export default function schedule(){
                     const response = axios.post(process.env.USERMESSENGER_ENDPOINT, data);
                 }
                 catch (e) {
-                    console.log(e);
+                    console.log('could not send to usermessenger', e);
                 }
             }
 

@@ -76,9 +76,7 @@ function handleSetOnce(user: BotUser, entities: ParsedEntities) : ParseResponse 
 }
 
 export function parseIntent(intent, entities, user){
-    console.log('handle intent', intent.name)
     entities = parseEntities(entities);
-    console.log('handle entities', entities)
     switch (intent.name){
         case 'reminder-set-once':
             return handleSetOnce(user, entities);

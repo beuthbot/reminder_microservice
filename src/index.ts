@@ -30,7 +30,7 @@ import {BotUser} from "@bhtbot/bhtbot";
 //     'reminder_service'
 // );
 const database = new Connector().connect(
-    'localhost',
+    process.env.REMINDER_DATABASE_ADDRESS,
     5432,
     process.env.REMINDER_DATABASE_USER,
     process.env.REMINDER_DATABASE_PASSWORD,
