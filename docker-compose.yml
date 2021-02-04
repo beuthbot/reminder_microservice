@@ -8,6 +8,11 @@ services:
       - "${REMINDER_PORT:-9953}:3000"
     environment:
       - REMINDER_PORT
+      - REMINDER_DATABASE_ADDRESS
+      - REMINDER_DATABASE_PASSWORD
+      - REMINDER_DATABASE_USER
+      - USERMESSENGER_TOKEN
+      - USERMESSENGER_ENDPOINT
     networks:
       - postgres
 
