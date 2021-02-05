@@ -27,10 +27,13 @@ export default function schedule(){
                 });
             }
 
-            //todo get user clients from database service when released
-            const userClients = [
-                {serviceName: 'discord', clientId: '185540011314249729'}
-            ];
+            //{"_id":"601bf844b70b3700180d8eaa","id":13,"nickname":null,"firstName":"sick","lastName":null,"messengerIDs":[{"messenger":"discord","id":"185540011314249729"}],"details":[]}
+            const userData = await axios.get(process.env.DATABASE_USER_ENDPOINT + reminder.userId);
+            const userClients = (userData && userData.data ? userData.data.messengerIDs : []).map(messengerData => ({
+                serviceName: messengerData.messenger,
+                clientId: messengerData.id
+            }))
+
 
             for (const {serviceName, clientId} of userClients) {
                 try{
