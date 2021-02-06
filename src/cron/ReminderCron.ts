@@ -28,13 +28,13 @@ export default function schedule(){
                 });
             }
 
-            //{"_id":"601bf844b70b3700180d8eaa","id":13,"nickname":null,"firstName":"sick","lastName":null,"messengerIDs":[{"messenger":"discord","id":"185540011314249729"}],"details":[]}
+            console.log('query user data for reminder', reminder);
             const userData = await axios.get(process.env.DATABASE_USER_ENDPOINT + reminder.userId);
             const userClients = (userData && userData.data ? userData.data.messengerIDs : []).map(messengerData => ({
                 serviceName: messengerData.messenger,
                 clientId: messengerData.id
             }))
-
+            console.log('user clients', userClients)
 
             for (const {serviceName, clientId} of userClients) {
                 try{
