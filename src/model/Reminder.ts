@@ -79,6 +79,6 @@ export class Reminder extends BaseEntity {
     toHumanReadable() {
         moment.locale('de')
         const timezone = 3600;
-        return "Erinnere " + moment.unix(this.remindAtUnix + timezone).calendar() + " an " + this.title;
+        return "Erinnere " + moment.unix(this.remindAtUnix).utcOffset(1).calendar() + " an " + this.title;
     }
 }

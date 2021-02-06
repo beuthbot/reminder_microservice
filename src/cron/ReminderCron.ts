@@ -8,11 +8,12 @@ export default function schedule(){
 
     cron.schedule('* * * * *', async () => {
 
-        console.log('EVERY MINUTE CRON')
-
         const entries = await ReminderService.getNonRemindedDue();
-        console.log('due', entries.length, entries.map(ent=>ent.id));
-        console.log('recurring', entries.filter(ent=>ent.isRecurring).length);
+
+        if(entries.length > 0){
+            console.log('reminder due', entries.length, entries.map(ent=>ent.id));
+            console.log('with recurring', entries.filter(ent=>ent.isRecurring).length);
+        }
 
         for (const reminder of entries) {
             reminder.remindedAtUnix = currentTimestamp();

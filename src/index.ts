@@ -61,9 +61,6 @@ app.endpoint('remind', async (req, answ)=>{
 
     console.log('request user', req)
 
-    //todo user is currently null, database service needs fix
-    req.user = {id:'testUser', nickname:'testUser'};
-
     const result = parseIntent(req.intent, req.entities, req.user);
     if(!result.success){
         return answ.setError(result.errorMessage).setCacheable(false);
