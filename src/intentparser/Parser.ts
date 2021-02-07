@@ -5,6 +5,7 @@ import {Reminder} from "../model/Reminder";
 import {currentTimestamp, IntervalTypes} from "../model/Time";
 import {BotUser} from '@bhtbot/bhtbot';
 import {ReminderService} from "../service/ReminderService";
+import * as Strings from '../service/ReminderStrings';
 
 const rasaToMomentMapping = {
     'jede Minute': IntervalTypes.minutes,
@@ -86,14 +87,13 @@ async function handleReminderRemove(user: BotUser, entities: ParsedEntities): Pr
 
     const pageIdx = Number(entities.number.value) - 1;
 
-    const reminders = await ReminderService.getAllByUser(user.id);
+    let reminders = await ReminderService.getAllByUser(user.id);
     if (pageIdx < 0 || !reminders || reminders.length == 0 || reminders.length <= pageIdx){
         return response.setError('Reminder with idx ' + entities.number.value + ' not found');
     }
-
     await reminders[pageIdx].remove();
 
-    return response.setSuccess("[GELÖSCHT] " + reminders[pageIdx].toHumanReadable());
+    return response.setSuccess("[GELÖSCHT] " + reminders[pageIdx].toHumanReadable() + "\n\n" + Strings.deletableListMessage(await ReminderService.getAllByUser(user.id)));
 }
 
 async function handleReminderGet(user) {
@@ -104,12 +104,7 @@ async function handleReminderGet(user) {
         return response.setError('No Reminders stored');
     }
 
-    let msg = 'Your reminders (can be deleted by using their temporary ids)';
-    response.reminders.forEach((reminder, idx)=>{
-        msg += `\n [${idx + 1}] ${reminder.toHumanReadable()}\n`
-    })
-
-    return response.setSuccess(msg);
+    return response.setSuccess(Strings.deletableListMessage(response.reminders));
 }
 
 export async function parseIntent(intent, entities, user) {
