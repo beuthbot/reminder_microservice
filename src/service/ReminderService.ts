@@ -16,6 +16,19 @@ class ReminderServiceClass {
             .getMany();
     }
 
+    async getRemindersRemindAtInDateRange(fromUnix?:number, toUnix?:number){
+        const builder = getCurrentConnection()
+            .getRepository(Reminder).createQueryBuilder('reminder');
+
+        if(fromUnix)
+            builder.andWhere("reminder.remindAtUnix >= :remindAtUnix", { remindAtUnix: fromUnix })
+
+        if(toUnix)
+            builder.andWhere("reminder.remindAtUnix <= :remindAtUnix", { remindAtUnix: toUnix })
+
+        return await builder.getMany();
+    }
+
     async getAllByUser(userId: string, includeOld: boolean = false){
         const builder = getCurrentConnection()
             .getRepository(Reminder).createQueryBuilder('reminder')

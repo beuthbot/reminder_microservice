@@ -39,7 +39,7 @@ services:
     volumes:
       - pgadmin:/root/.pgadmin
     ports:
-      - "${PGADMIN_PORT:-5050}:80"
+      - "${REMINDER_PGADMIN_PORT:-5050}:80"
     networks:
       - postgres
     restart: unless-stopped
