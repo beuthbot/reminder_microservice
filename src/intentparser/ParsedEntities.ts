@@ -3,6 +3,7 @@ import {IntervalEntity} from './entities/Interval';
 import {TimeEntity} from './entities/TimeEntity';
 import {TopicEntity} from './entities/Topic';
 import {ParseResponse} from "./ParseResponse";
+import {NumberEntity} from "./entities/Number";
 
 export {DateEntity, IntervalEntity, TimeEntity, TopicEntity}
 
@@ -11,6 +12,7 @@ export const entityTypes = {
     time: TimeEntity,
     interval: IntervalEntity,
     topic: TopicEntity,
+    number: NumberEntity
 };
 
 export class ParsedEntities {
@@ -18,6 +20,7 @@ export class ParsedEntities {
     interval: IntervalEntity = null;
     time: TimeEntity = null;
     topic: TopicEntity = null;
+    number: NumberEntity = null;
 }
 
 export function parseEntities(entities){
@@ -40,7 +43,7 @@ export function validateEntities(entities: ParsedEntities, expectedEntities: str
 
     for(let i = 0; i < expectedEntities.length; i++){
         if(!entities[expectedEntities[i]]){
-            return new ParseResponse(false, "Entity missing in Intent: " + expectedEntities[i])
+            return new ParseResponse(false, undefined,"Entity missing in Intent: " + expectedEntities[i])
         }
     }
     return new ParseResponse(true);

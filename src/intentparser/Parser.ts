@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import {Reminder} from "../model/Reminder";
 import {currentTimestamp, IntervalTypes} from "../model/Time";
 import {BotUser} from '@bhtbot/bhtbot';
+import {ReminderService} from "../service/ReminderService";
 
 const rasaToMomentMapping = {
     'jede Minute': IntervalTypes.minutes,
@@ -27,7 +28,7 @@ const rasaToMomentMapping = {
 //     jeden Sonntag
 }
 
-function handleSetInterval(user: BotUser, entities: ParsedEntities) : ParseResponse {
+async function handleSetInterval(user: BotUser, entities: ParsedEntities) : Promise<ParseResponse> {
 
     const response = validateEntities(entities, ['topic', 'interval'])
     if(!response.success) return response;
@@ -45,6 +46,8 @@ function handleSetInterval(user: BotUser, entities: ParsedEntities) : ParseRespo
     if(matchedIntervals.length === 0) return response.setError("Can't parse interval")
 
     // const reminder = Reminder.builder(user.id, targetTopic, targetDate.unix()).setRecurring().build();
+    // reminder.save();
+    // set result result.reminders[0].toHumanReadable()
     // response.reminder = reminder;
 
 
@@ -54,34 +57,73 @@ function handleSetInterval(user: BotUser, entities: ParsedEntities) : ParseRespo
     return response;
 }
 
-function handleSetOnce(user: BotUser, entities: ParsedEntities) : ParseResponse {
+async function handleSetOnce(user: BotUser, entities: ParsedEntities): Promise<ParseResponse> {
 
     const response = validateEntities(entities, ['topic', 'time'])
-    if(!response.success) return response;
+    if (!response.success) return response;
 
     const targetDate = moment(entities.time.value);
-    if(!targetDate) return response.setError("Cant parse date");
+    if (!targetDate) return response.setError("Cant parse date");
 
     const targetTopic = entities.topic.value;
-    if(!targetDate) return response.setError("Cant parse topic");
+    if (!targetDate) return response.setError("Cant parse topic");
 
     const reminder = Reminder.builder(user.id, targetTopic, targetDate.unix()).build();
-    response.reminder = reminder;
+    await reminder.save();
+    response.reminders = [reminder];
 
     // console.log('entities', entities)
     // console.log('additional', entities.time.additional_info)
     // console.log('target date', targetDate, targetTopic)
 
-    return response;
+    return response.setSuccess("[ERSTELLT] " + reminder.toHumanReadable());
 }
 
-export function parseIntent(intent, entities, user){
+async function handleReminderRemove(user: BotUser, entities: ParsedEntities): Promise<ParseResponse> {
+
+    const response = validateEntities(entities, ['number'])
+    if (!response.success) return response;
+
+    const pageIdx = Number(entities.number.value) - 1;
+
+    const reminders = await ReminderService.getAllByUser(user.id);
+    if (pageIdx < 0 || !reminders || reminders.length == 0 || reminders.length <= pageIdx){
+        return response.setError('Reminder with idx ' + entities.number.value + ' not found');
+    }
+
+    await reminders[pageIdx].remove();
+
+    return response.setSuccess("[GELÖSCHT] " + reminders[pageIdx].toHumanReadable());
+}
+
+async function handleReminderGet(user) {
+    const response = new ParseResponse(true);
+    response.reminders = await ReminderService.getAllByUser(user.id);
+
+    if(!response.reminders || response.reminders.length === 0){
+        return response.setError('No Reminders stored');
+    }
+
+    let msg = 'Your reminders (can be deleted by using their temporary ids)';
+    response.reminders.forEach((reminder, idx)=>{
+        msg += `\n [${idx + 1}] ${reminder.title}\n`
+    })
+
+    return response.setSuccess(msg);
+}
+
+export async function parseIntent(intent, entities, user) {
     entities = parseEntities(entities);
-    switch (intent.name){
+    switch (intent.name) {
         case 'reminder-set-once':
-            return handleSetOnce(user, entities);
+            return await handleSetOnce(user, entities);
         case 'reminder-set-interval':
-            return handleSetInterval(user, entities);
-        default: throw new Error('Unknown intent ' + intent.name);
+            return await handleSetInterval(user, entities);
+        case 'reminder-get':
+            return await handleReminderGet(user);
+        case 'reminder-remove':
+            return await handleReminderRemove(user, entities);
+        default:
+            throw new Error('Unknown intent ' + intent.name);
     }
 }
