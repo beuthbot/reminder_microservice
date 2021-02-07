@@ -106,7 +106,7 @@ async function handleReminderGet(user) {
 
     let msg = 'Your reminders (can be deleted by using their temporary ids)';
     response.reminders.forEach((reminder, idx)=>{
-        msg += `\n [${idx + 1}] ${reminder.title}\n`
+        msg += `\n [${idx + 1}] ${reminder.toHumanReadable()}\n`
     })
 
     return response.setSuccess(msg);

@@ -22,7 +22,7 @@ class ReminderServiceClass {
             .where("reminder.userId = :userId", { userId })
 
         if(!includeOld){
-            builder.andWhere("remindAtUnix >= :remindAtUnix", { remindAtUnix: currentTimestamp() })
+            builder.andWhere("reminder.remindAtUnix >= :remindAtUnix", { remindAtUnix: currentTimestamp() })
         }
 
         return builder.getMany();
