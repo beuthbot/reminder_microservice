@@ -13,6 +13,7 @@ services:
       - REMINDER_DATABASE_USER
       - USERMESSENGER_TOKEN
       - USERMESSENGER_ENDPOINT
+      - REMINDER_CLEAR_OLDER_THAN_DAYS
     networks:
       - postgres
 
