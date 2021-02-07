@@ -7,7 +7,7 @@ import moment = require("moment");
 
 export default function schedule(){
 
-    cron.schedule('* * * * *', async () => {
+    cron.schedule('0 */4 * * *', async () => {
 
         const cleanOlderThanDays: number = process.env.REMINDER_CLEAR_OLDER_THAN_DAYS ? Number(process.env.REMINDER_CLEAR_OLDER_THAN_DAYS) : 7;
         const duration = moment.duration({[IntervalTypes.days]: cleanOlderThanDays})
