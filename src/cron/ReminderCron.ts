@@ -2,12 +2,14 @@ import * as cron from 'node-cron';
 import {ReminderService} from "../service/ReminderService";
 import {currentTimestamp, stringFormatUnixTimestamp} from "../model/Time";
 import axios from 'axios';
+import moment = require("moment");
 
 export default function schedule(){
 
     cron.schedule('* * * * *', async () => {
 
         const entries = await ReminderService.getNonRemindedDue();
+        const nowUnix = moment().unix();
 
         if(entries.length > 0){
             console.log('reminder due', entries.length, entries.map(ent=>ent.id));
@@ -20,7 +22,17 @@ export default function schedule(){
 
             try {
                 if (reminder.isRecurring) {
-                    const nextSchedule = reminder.reschedule();
+                    let nextSchedule = reminder.reschedule(), securityBreak = 10000;
+
+                    /* heighten nextSchedule until it's a future date prevents (multiple) old entries generated when server is down for some time */
+                    while (nextSchedule.remindAtUnix < nowUnix){
+                        nextSchedule = nextSchedule.reschedule();
+                        if(securityBreak-- < 0){
+                            throw Error('Could not reschedule without endless loop');
+                        }
+                    }
+
+                    /* Save next schedule */
                     nextSchedule.save().then(res => {
                         console.log(
                             `${reminder.prevRecurringId} -> ${reminder.id} -> ${nextSchedule.id}`,
