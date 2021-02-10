@@ -34,9 +34,6 @@ export class Reminder extends BaseEntity {
     @Column("bigint")
     prevRecurringId: number = 0;
 
-    calculateNextRecurringTimestamp() {
-
-    }
     reschedule() {
 
         const builder = Reminder.builder(this.userId, this.title, applyInterval(this.remindAtUnix, this.recurIntervalType, this.recurIntervalStep));

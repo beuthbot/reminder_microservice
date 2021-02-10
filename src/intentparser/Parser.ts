@@ -56,6 +56,7 @@ async function handleSetInterval(user: BotUser, entities: ParsedEntities) : Prom
     // reminder.save();
     // set result result.reminders[0].toHumanReadable()
     // response.reminder = reminder;
+    // return response
 
     return response.setError('Intervalle sind aktuell noch nicht unterstützt');
 }
@@ -74,10 +75,6 @@ async function handleSetOnce(user: BotUser, entities: ParsedEntities): Promise<P
     const reminder = Reminder.builder(user.id, targetTopic, targetDate.unix()).build();
     await reminder.save();
     response.reminders = [reminder];
-
-    // console.log('entities', entities)
-    // console.log('additional', entities.time.additional_info)
-    // console.log('target date', targetDate, targetTopic)
 
     return response.setSuccess("[ERSTELLT] " + reminder.toHumanReadable());
 }
