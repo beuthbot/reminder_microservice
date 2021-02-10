@@ -1,8 +1,8 @@
-import {ParsedEntities, entityTypes, parseEntities, validateEntities} from "./ParsedEntities";
+import {ParsedEntities, parseEntities, validateEntities} from "./ParsedEntities";
 import {ParseResponse} from "./ParseResponse";
 import * as moment from 'moment';
 import {Reminder} from "../model/Reminder";
-import {currentTimestamp, IntervalTypes} from "../model/Time";
+import {IntervalTypes} from "../model/Time";
 import {BotUser} from '@bhtbot/bhtbot';
 import {ReminderService} from "../service/ReminderService";
 import * as Strings from '../service/ReminderStrings';

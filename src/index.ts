@@ -8,15 +8,16 @@
 
 /* Init environment from .env for non-docker */
 import {config as dotenvConfig} from 'dotenv';
-dotenvConfig();
-
 import {Connector} from './repository/connector';
 import {registerCronjobs} from "./cron";
 
 /* Init Service */
-import {Service, AppConfig} from "@bhtbot/bhtbotservice";
+import {AppConfig, Service} from "@bhtbot/bhtbotservice";
 
 import {parseIntent} from "./intentparser/Parser";
+
+dotenvConfig();
+
 const database = new Connector().connect(
     process.env.REMINDER_DATABASE_ADDRESS,
     5432,

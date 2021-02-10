@@ -1,8 +1,6 @@
 import * as cron from 'node-cron';
 import {ReminderService} from "../service/ReminderService";
-import {Reminder} from "../model/Reminder";
-import {currentTimestamp, IntervalTypes, stringFormatUnixTimestamp} from "../model/Time";
-import axios from 'axios';
+import {IntervalTypes} from "../model/Time";
 import moment = require("moment");
 
 export default function schedule(){
