@@ -35,27 +35,29 @@ async function handleSetInterval(user: BotUser, entities: ParsedEntities) : Prom
     if(!response.success) return response;
 
     const targetDate = entities.time ? moment(entities.time.value) : moment();
-    if(!targetDate) return response.setError("Cant parse date");
+    if(!targetDate) return response.setError("Konnte Datum nicht verarbeiten");
 
     const targetTopic = entities.topic.value;
-    if(!targetDate) return response.setError("Cant parse topic");
+    if(!targetDate) return response.setError("Konnte Thema nicht verarbeiten");
 
     const intervalRasa = entities.interval.value.toLowerCase();
     const matchedIntervals = Object.keys(rasaToMomentMapping)
         .map(key=>key.toLowerCase() === intervalRasa ? rasaToMomentMapping[key] : null)
         .filter(el => el !== null);
-    if(matchedIntervals.length === 0) return response.setError("Can't parse interval")
 
-    // const reminder = Reminder.builder(user.id, targetTopic, targetDate.unix()).setRecurring().build();
+
+    if(matchedIntervals.length === 0) return response.setError(`Kenne Interval "${intervalRasa}" nicht`)
+    if(matchedIntervals.length > 1) return response.setError(`Intervalle "${matchedIntervals.join(",")}" nicht eindeutig`);
+    console.log('matched intervals', matchedIntervals)
+
+    //todo: map matched intervals with schemes from rasa in $(rasaToMomentMapping) -
+
+    // const reminder = Reminder.builder(user.id, targetTopic, targetDate.unix()).setRecurring(entities., matchedIntervals[0]).build();
     // reminder.save();
     // set result result.reminders[0].toHumanReadable()
     // response.reminder = reminder;
 
-
-    console.log('matched intervals', matchedIntervals)
-    //todo...
-
-    return response;
+    return response.setError('Intervalle sind aktuell noch nicht unterstützt');
 }
 
 async function handleSetOnce(user: BotUser, entities: ParsedEntities): Promise<ParseResponse> {
@@ -64,10 +66,10 @@ async function handleSetOnce(user: BotUser, entities: ParsedEntities): Promise<P
     if (!response.success) return response;
 
     const targetDate = moment(entities.time.value);
-    if (!targetDate) return response.setError("Cant parse date");
+    if (!targetDate) return response.setError("Konnte Datum nicht verarbeiten");
 
     const targetTopic = entities.topic.value;
-    if (!targetDate) return response.setError("Cant parse topic");
+    if (!targetDate) return response.setError("Konnte Thema nicht verarbeiten");
 
     const reminder = Reminder.builder(user.id, targetTopic, targetDate.unix()).build();
     await reminder.save();
@@ -101,7 +103,7 @@ async function handleReminderGet(user) {
     response.reminders = await ReminderService.getAllByUser(user.id);
 
     if(!response.reminders || response.reminders.length === 0){
-        return response.setError('No Reminders stored');
+        return response.setError('Keine Erinnerungen gespeichert');
     }
 
     return response.setSuccess(Strings.deletableListMessage(response.reminders));

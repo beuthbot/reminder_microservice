@@ -25,7 +25,6 @@ services:
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
-    #todo: ports not needed for release
     ports:
       - "5432:5432"
     networks:
